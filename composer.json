@@ -1,0 +1,25 @@
+{
+    "name": "timothy/myelefant",
+    "description": "MyElefant send sms api",
+    "type": "composer-plugin",
+    "license": "MIT",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "vlucas/phpdotenv": "^3.1",
+        "monolog/monolog": "^1.24",
+        "symfony/yaml": "^4.2"
+    },
+    "authors": [
+        {
+            "name": "Timothy",
+            "email": "Timothy.prefol@digitgroup.com"
+        }
+    ],
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "myelefant\\": "src/"
+        }
+    }
+}
