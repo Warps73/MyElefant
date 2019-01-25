@@ -1,6 +1,7 @@
 <?php
 use myelefant\MyElefant;
-new myelefantplugin([['33627391805','Timothy'],['33627391805','Timothy']]);
+
+new myelefantplugin([['33627391805','Timothy'],['33627391805','Timothy']],'2019-25-60 12:60');
 
 class myelefantplugin
 {
@@ -14,6 +15,6 @@ class myelefantplugin
     public function __construct(array $contacts,string $date=null,string $message=null,string $sender=null){
         require_once __DIR__.'/vendor/autoload.php';
         $test = new MyElefant;
-        echo $test->getDate('2019-25-64 22:68');
+        $test->sendSms($contacts,$date,$message,$sender);
     }
 }

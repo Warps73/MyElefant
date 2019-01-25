@@ -57,18 +57,19 @@ class MyElefant
      * Initialize Dotenv
      * @return array
      */
-
     public function initDotEnv(){
         $dotenv = Dotenv\Dotenv::create(__DIR__.'/..');
         return $dotenv->load();
 
     }
 
-     /**
+    /**
      * Initialize Logger
+     *
+     * @param string $name
+     * @param string $path
      * @return self
      */
-
     public function initLogger(string $name,string $path){
         $logger = new Logger($name);
         $logger->pushHandler(new StreamHandler($path));
@@ -77,12 +78,12 @@ class MyElefant
     }
 
     /**
-     * @param DateTime format Y-m-d H:i | null
-     * @return Exception|DateTime
+     * @param string|DateTime format Y-m-d H:i | null
+     * @return string
      */
 
     public function getDate($date = null){
-        try {
+
             $currentDate = new DateTime();
             $currentDate = $currentDate->format('Y-m-d H:i');
 
@@ -91,9 +92,9 @@ class MyElefant
                     try {
                         $date = new DateTime($date);
 
-                    } catch (Exception $e) {
-                        $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_DATE_FORMAT']);
-                        return $this->yamlDatas['TARGET_EXCEPTION'].': '.$this->yamlDatas['CRITICAL_MESSAGE_DATE_FORMAT'];
+                    } catch (\Throwable $e) {
+                        $this->setLog('critical',$e->getMessage());
+                        throw new Exception($e->getMessage());
                     }
 
                     $date = $date->format('Y-m-d H:i');
@@ -101,19 +102,15 @@ class MyElefant
                         return $date;
     
                     }else {
+                        throw new Exception( $this->yamlDatas['CRITICAL_MESSAGE_DATE']);
                         $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_DATE']);
-                        throw new Exception($this->yamlDatas['CRITICAL_MESSAGE_DATE']);
     
                     }               
                 }else{
+                    throw new Exception( $this->yamlDatas['CRITICAL_MESSAGE_DATE_FORMAT']);
                     $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_DATE_FORMAT']);
-                    throw new Exception($this->yamlDatas['CRITICAL_MESSAGE_DATE_FORMAT']);
                 }
             }
-        } catch (Exception $e){
-            return ($this->yamlDatas['TARGET_EXCEPTION'].': '.$e->getMessage());
-
-        }
         return $currentDate;
     }
 
@@ -123,18 +120,15 @@ class MyElefant
      */
 
     public function getAuthentification($secretKey){
-        try {
-            $headers = ['Authorization' => 'Basic '.$secretKey];
-            $client = new Client();
-            $response = $client->request('POST', $this->yamlDatas['URL_MYELEFANT_API'].$this->yamlDatas['URL_MYELEFANT_API_AUTHENTIFICATION'],['headers' => $headers]); 
-            if($response->getStatusCode() == 200) {
-                $body = $response->getBody();
-                $arr_body = json_decode($body);
-                return $arr_body->access_token;
 
-            }
-        } catch(Exception $e) {
-            $this->setLog($e->getMessage());
+        $headers = ['Authorization' => 'Basic '.$secretKey];
+        $client = new Client();
+        $response = $client->request('POST', $this->yamlDatas['URL_MYELEFANT_API'].$this->yamlDatas['URL_MYELEFANT_API_AUTHENTIFICATION'],['headers' => $headers]); 
+        if($response->getStatusCode() == 200) {
+            $body = $response->getBody();
+            $arr_body = json_decode($body);
+            return $arr_body->access_token;
+
         }
     } 
 
@@ -148,22 +142,11 @@ class MyElefant
 
     public function sendSms(array $contacts, $sendDate=null, $message = null, $sender = null){
         
-
-        // Debug
-        // var_dump(getenv('CAMPAIGN_LEAD_ID'));
-        // var_dump($this->yamlDatas['CAMPAIGN_NAME']);
-        // var_dump($this->getContact($contacts));
-        // var_dump($this->getDate($sendDate));
-        // var_dump($this->yamlDatas['LOGIC']);
-        // var_dump($this->getMessage($message));
-        // var_dump($this->yamlDatas['DEFAULT_SENDER']); 
-
+        if (!$this->checkFields($message,$sender)) {
+            $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_EMPTY_MESSAGE']);
+            throw new Exception($this->yamlDatas['CRITICAL_MESSAGE_EMPTY_MESSAGE']);
+        }
         try {
-            if (!$this->checkFields($message,$sender)) {
-                $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_EMPTY_MESSAGE']);
-                throw new Exception($this->yamlDatas['CRITICAL_MESSAGE_EMPTY_MESSAGE']);
-            }
-
             $client = new Client();
             $response = $client->request('POST', $this->yamlDatas['URL_MYELEFANT_API'].$this->yamlDatas['URL_MYELEFANT_API_CREATE_CAMPAIGN'],
                 [ 
@@ -178,6 +161,11 @@ class MyElefant
                     'sender' => $this->getSender($sender, $message)
                 ]                    
             ]); 
+
+        } catch (\Throwable $e) {
+            $this->setLog('critical',$e->getMessage());
+            throw new Exception($e->getMessage());
+        }
             if($response->getStatusCode() == 200) {
                 $body = $response->getBody();
                 $arr_body = json_decode($body);
@@ -186,9 +174,6 @@ class MyElefant
 
                 }
             }
-        } catch(Exception $e) {
-            $this->setLog('critical',$e->getMessage());
-        }
     } 
 
     /**
@@ -197,16 +182,11 @@ class MyElefant
      */
 
     public function getMessage($message){
-        try {
-            if(strlen($message) > $this->yamlDatas['MAX_LENGTH_MESSAGE'] ){
+
+        if(strlen($message) > $this->yamlDatas['MAX_LENGTH_MESSAGE'] ){
                 $this->setLog('warning',$this->yamlDatas['WARNING_MESSAGE_LENGTH']);
                 throw new Exception($this->yamlDatas['WARNING_MESSAGE_LENGTH']);
-
-            }
-        } catch (Exception $e) {
-            return ($this->yamlDatas['TARGET_EXCEPTION'].': '.$e->getMessage());
-
-        }   
+            } 
         return $message;
     }
 
@@ -215,13 +195,13 @@ class MyElefant
      * @return array|null
      */
 
-    public function getContact(array $contacts = null ){
-        try {
-            if (is_array($contacts[0])) {
+    public function getContact(array $contacts){
+
+            if (is_array($contacts) && $this->checkContactsFormat($contacts)) {
                 foreach ($contacts as $key) {
-                    if(!$this->getPhoneNumber($key[0])){
+                    if(!$this->checkPhoneNumber($key[0])){
                         $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT']);
-                        return new Exception($key[0].' '. $this->yamlDatas['CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT']);
+                        throw new Exception($key[0].' '. $this->yamlDatas['CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT']);
 
                     }
                 }                
@@ -229,11 +209,7 @@ class MyElefant
                 $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_CONTACT_FORMAT']);
                 throw new Exception($this->yamlDatas['CRITICAL_MESSAGE_CONTACT_FORMAT']);
 
-            }
-        } catch (Exception $e) {
-            return ($this->yamlDatas['TARGET_EXCEPTION'].': '.$e->getMessage());
-
-        }   
+            }  
         return $contacts;
     }
 
@@ -242,7 +218,7 @@ class MyElefant
      * @return bool 
      */
 
-    private function getPhoneNumber(string $phoneNumber){
+    public function checkPhoneNumber(string $phoneNumber){
         if(preg_match($this->yamlDatas['REGEX_PHONE_NUMBER'],$phoneNumber)){
             return true;
 
@@ -256,7 +232,7 @@ class MyElefant
      * @return void
      */
 
-    private function setLog(string $logLevel, string $message){
+    public function setLog(string $logLevel, string $message){
         if ( isset($this->error) && isset($this->info) ) {
             switch ($logLevel) {
                 case 'critical':
@@ -279,19 +255,16 @@ class MyElefant
      * @return string|void
      */
 
-    public function getSender($sender,$message){
-        try {
-            if ($sender == null && $message == null) {
-                return;
+    public function getSender($sender, $message){
 
-            }elseif ($sender == null && $message != null) {
-                return $this->yamlDatas['DEFAULT_SENDER'];
+        if ($sender == null && $message == null) {
+            return;
 
-            }
-            return $sender;
-        } catch (Exception $e) {
-            
+        }elseif ($sender == null && $message != null) {
+            return $this->yamlDatas['DEFAULT_SENDER'];
+
         }
+        return $sender;
     }
 
     /**
@@ -306,6 +279,20 @@ class MyElefant
         }
         return true;
     }
+
+    /**
+     * @param array
+     * @return bool
+     */
+    public function checkContactsFormat($contacts){
+        foreach ($contacts as $key) {
+            if (!is_array($key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
 
 

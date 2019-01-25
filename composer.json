@@ -16,6 +16,8 @@
         }
     ],
     "require-dev": {
+        "atoum/atoum": "^3.3",
+        "atoum/stubs": "^2.6"
     },
     "autoload": {
         "psr-4": {

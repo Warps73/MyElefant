@@ -13,7 +13,6 @@ LOGIC : duplicate
 MAX_LENGTH_MESSAGE : 160
 REGEX_PHONE_NUMBER : '/^[0-9]{2}[0-9]{9}$/'
 SUCCESS_MESSAGE : Message sent correctly
-TARGET_EXCEPTION : Exception
 URL_MYELEFANT_API : https://api.myelefant.com
 URL_MYELEFANT_API_AUTHENTIFICATION : /v1/token
 URL_MYELEFANT_API_CREATE_CAMPAIGN : /v1/campaign/create
