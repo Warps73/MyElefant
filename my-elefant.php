@@ -1,8 +1,6 @@
 <?php
 use myelefant\MyElefant;
 
-new myelefantplugin([['33627391805','Timothy'],['33627391805','Timothy']],'2019-25-60 12:60');
-
 class myelefantplugin
 {
     /**

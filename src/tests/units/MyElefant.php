@@ -5,6 +5,7 @@ namespace tests\units\MyElefant;
 require_once __DIR__.'/atoum.phar';
 include_once __DIR__.'/../../MyElefant.php';
 require_once __DIR__.'/FakeMyElefant.php';
+require_once __DIR__.'/../../../vendor/autoload.php';
 
 use mageekguy\atoum;
 use MyElefant\MyElefant as classToTest;
@@ -61,7 +62,7 @@ class MyElefant extends atoum\test
         $this
             ->if($this->newTestedInstance)
                 ->given(
-                    $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml'),
+                    $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml')
                 )
             ->then
                 ->string($this->testedInstance->getMessage('I\'m message'))
@@ -82,7 +83,7 @@ class MyElefant extends atoum\test
         $this
             ->if($this->newTestedInstance)
             ->given(
-                $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml'),
+                $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml')
             )
         ->then
             ->array($this->testedInstance->getContact([['33612345618','Timothy']]))
@@ -167,11 +168,6 @@ class MyElefant extends atoum\test
             ->then
                 ->string($this->testedInstance->getSender('sender', 'message'))
                 ->isIdenticalTo('sender')
-            ->then
-                ->exception(function(){
-                    $this->testedInstance->getSender('sender');
-                })
-                ->isInstanceOf('TypeError')
             ;
 
     }
@@ -207,16 +203,6 @@ class MyElefant extends atoum\test
         ->then
             ->variable($this->testedInstance->checkFields(null,'sender'))
             ->isIdenticalTo(false)
-        ->then
-            ->exception(function(){
-                $this->testedInstance->checkFields();
-            })
-            ->isInstanceOf('TypeError')
-        ->then
-            ->exception(function(){
-                $this->testedInstance->checkFields('message');
-            })
-            ->isInstanceOf('TypeError')
         ;
 
     }

@@ -1,0 +1,173 @@
+# Define common configurations
+working_directory: &working_directory
+  working_directory: /tmp/app
+
+# Filter template: only tags and develop branch
+filter_only_tags_develop: &filter_only_tags_develop
+  filters:
+    tags:
+      only: /.*/
+    branches:
+      only: /develop/
+
+# Filter template: only develop branch
+filter_only_develop: &filter_only_develop
+  filters:
+    tags:
+      ignore: /.*/
+    branches:
+      only: /develop/
+
+# Filter template: allow all
+filter_all: &filter_all
+  filters:
+    tags:
+      only: /.*/
+    branches:
+      only: /.*/
+
+# Filter template: only tags
+filter_only_tags: &filter_only_tags
+  filters:
+    tags:
+      only: /.*/
+    branches:
+      ignore: /.*/
+
+# Filter template: all branches and no tags
+filter_ignore_tags: &filter_ignore_tags
+  filters:
+    tags:
+      ignore: /.*/
+    branches:
+      only: /.*/
+
+# Define Terraform configurations
+terraform_config: &terraform_config
+  docker:
+    - image: basile/terraform-aws:0.11.8
+  <<: *working_directory
+
+# Define Composer configurations
+php70_config: &php70_config
+  docker:
+    - image: digitregroup/php-composer:7.0
+  <<: *working_directory
+
+php71_config: &php71_config
+  docker:
+    - image: digitregroup/php-composer:7.1
+  <<: *working_directory
+
+php56_config: &php56_config
+  docker:
+    - image: digitregroup/php-composer:5.6
+  <<: *working_directory
+
+# Define node build configurations
+node_config: &node_config
+  docker:
+    - image: circleci/node:8.10
+  <<: *working_directory
+
+# Download cached php dependencies
+restore_composer_cache: &restore_composer_cache
+  restore_cache:
+      keys:
+        - composer-dependencies-{{ checksum "composer.json" }}
+        # fallback to using the latest cache if no exact match is found
+        - composer-dependencies-
+
+# Save php cache dependencies
+save_composer_cache: &save_composer_cache
+  save_cache:
+    paths:
+      - vendor
+    key: composer-dependencies-{{ checksum "composer.json" }}
+
+# Download cached workspace
+restore_workspace: &restore_workspace
+  attach_workspace:
+    # Must be absolute path or relative path from working_directory
+    at: .
+
+# Save all actual files
+save_workspace: &save_workspace
+  persist_to_workspace:
+    # Must be relative path from working_directory
+    root: .
+    # Must be relative path from root
+    paths:
+      - .
+
+version: 2
+jobs:
+
+  test_php56:
+    <<: *php56_config
+    steps:
+      - checkout
+
+      - *restore_composer_cache
+
+      - run:
+          name: Install vendors
+          command: composer install
+
+      - *save_composer_cache
+      
+      - run:
+          name: Run unit tests
+          command: cd src/tests/units && php MyElefant.php
+
+      - *save_workspace
+
+  test_php70:
+    <<: *php70_config
+    steps:
+      - checkout
+
+      - *restore_composer_cache
+
+      - run:
+          name: Install vendors
+          command: composer install
+
+      - *save_composer_cache
+      
+      - run:
+          name: Run unit tests
+          command: cd src/tests/units && php MyElefant.php
+
+      - *save_workspace
+
+  test_php71:
+    <<: *php71_config
+    steps:
+      - checkout
+
+      - *restore_composer_cache
+
+      - run:
+          name: Install vendors
+          command: composer install
+
+      - *save_composer_cache
+      
+      - run:
+          name: Run unit tests
+          command: cd src/tests/units && php MyElefant.php
+
+      - *save_workspace
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - test_php56:
+          <<: *filter_all
+      - test_php70:
+          <<: *filter_all
+      - test_php71:
+          <<: *filter_all
+
