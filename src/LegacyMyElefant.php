@@ -1,5 +1,6 @@
 <?php
 namespace myelefant;
+
 use Dotenv;
 use GuzzleHttp\Client;
 use Monolog\Logger;
@@ -8,7 +9,8 @@ use Monolog\Handler\FirePHPHandler;
 use Symfony\Component\Yaml\Yaml;
 use DateTime;
 use Exception;
-class MyElefant
+
+class LegacyMyElefant
 {
 
     /**
@@ -68,10 +70,12 @@ class MyElefant
      * @param string $path
      * @return self
      */
-    public function initLogger(string $name,string $path){
-        $logger = new Logger($name);
-        $logger->pushHandler(new StreamHandler($path));
-        return $logger;
+    public function initLogger($name,$path){
+        if (isset($name,$path)) {
+            $logger = new Logger($name);
+            $logger->pushHandler(new StreamHandler($path));
+            return $logger;
+        }
         
     }
 
@@ -138,7 +142,7 @@ class MyElefant
      * @return void
      */
 
-    public function sendSms(array $contacts, $sendDate=null, $message = null, $sender = null){
+    public function sendSms($contacts, $sendDate=null, $message = null, $sender = null){
         
         if (!$this->checkFields($message,$sender)) {
             $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_EMPTY_MESSAGE']);
@@ -193,7 +197,7 @@ class MyElefant
      * @return array|null
      */
 
-    public function getContact(array $contacts){
+    public function getContact($contacts){
 
             if (is_array($contacts) && $this->checkContactsFormat($contacts)) {
                 foreach ($contacts as $key) {
@@ -216,8 +220,9 @@ class MyElefant
      * @return bool 
      */
 
-    public function checkPhoneNumber(string $phoneNumber){
-        if(preg_match($this->yamlDatas['REGEX_PHONE_NUMBER'],$phoneNumber)){
+    public function checkPhoneNumber($phoneNumber){
+
+        if(isset($phoneNumber) && preg_match($this->yamlDatas['REGEX_PHONE_NUMBER'],$phoneNumber)){
             return true;
 
         }
@@ -230,8 +235,8 @@ class MyElefant
      * @return void
      */
 
-    public function setLog(string $logLevel, string $message){
-        if ( isset($this->error) && isset($this->info) ) {
+    public function setLog($logLevel,$message){
+        if (isset($logLevel, $message, $this->error, $this->info )) {
             switch ($logLevel) {
                 case 'critical':
                     $this->error->critical($message);
@@ -282,13 +287,15 @@ class MyElefant
      * @param array
      * @return bool
      */
-    public function checkContactsFormat(array $contacts){
-        foreach ($contacts as $key) {
-            if (!is_array($key)) {
-                return false;
+    public function checkContactsFormat($contacts){
+        if (isset($contacts)) {
+            foreach ($contacts as $key) {
+                if (!is_array($key)) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
     }
 
 }

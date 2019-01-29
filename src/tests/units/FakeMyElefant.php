@@ -14,7 +14,7 @@ class FakeMyElefant
         return false;
     }
 
-    public function sendSms(string $secretToken, array $contacts, $sendDate=null, $message = null, $sender = null){
+    public function sendSms($secretToken, $contacts, $sendDate=null, $message = null, $sender = null){
         if ($secretToken === 'validToken') {
             if (isset($contacts, $sendDate, $message, $sender)) {
                 return 'success';

@@ -1,5 +1,6 @@
 <?php
 namespace myelefant;
+
 use Dotenv;
 use GuzzleHttp\Client;
 use Monolog\Logger;
@@ -8,6 +9,7 @@ use Monolog\Handler\FirePHPHandler;
 use Symfony\Component\Yaml\Yaml;
 use DateTime;
 use Exception;
+
 class MyElefant
 {
 
@@ -68,7 +70,7 @@ class MyElefant
      * @param string $path
      * @return self
      */
-    public function initLogger($name,$path){
+    public function initLogger(string $name,string $path){
         $logger = new Logger($name);
         $logger->pushHandler(new StreamHandler($path));
         return $logger;
@@ -138,7 +140,7 @@ class MyElefant
      * @return void
      */
 
-    public function sendSms($contacts, $sendDate=null, $message = null, $sender = null){
+    public function sendSms(array $contacts, $sendDate=null, $message = null, $sender = null){
         
         if (!$this->checkFields($message,$sender)) {
             $this->setLog('critical',$this->yamlDatas['CRITICAL_MESSAGE_EMPTY_MESSAGE']);
@@ -193,7 +195,7 @@ class MyElefant
      * @return array|null
      */
 
-    public function getContact($contacts){
+    public function getContact(array $contacts){
 
             if (is_array($contacts) && $this->checkContactsFormat($contacts)) {
                 foreach ($contacts as $key) {
@@ -216,7 +218,7 @@ class MyElefant
      * @return bool 
      */
 
-    public function checkPhoneNumber($phoneNumber){
+    public function checkPhoneNumber(string $phoneNumber){
         if(preg_match($this->yamlDatas['REGEX_PHONE_NUMBER'],$phoneNumber)){
             return true;
 
@@ -230,7 +232,7 @@ class MyElefant
      * @return void
      */
 
-    public function setLog($logLevel,$message){
+    public function setLog(string $logLevel, string $message){
         if ( isset($this->error) && isset($this->info) ) {
             switch ($logLevel) {
                 case 'critical':
@@ -282,7 +284,7 @@ class MyElefant
      * @param array
      * @return bool
      */
-    public function checkContactsFormat($contacts){
+    public function checkContactsFormat(array $contacts){
         foreach ($contacts as $key) {
             if (!is_array($key)) {
                 return false;

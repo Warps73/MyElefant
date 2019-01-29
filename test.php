@@ -1,6 +1,6 @@
 <?php
 
-var_dump(method());
+var_dump(E_ALL);
 
 function method($string){
     return $string;

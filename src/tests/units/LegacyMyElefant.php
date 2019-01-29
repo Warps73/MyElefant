@@ -3,12 +3,12 @@
 namespace tests\units\MyElefant;
 
 require_once __DIR__.'/atoum.phar';
-include_once __DIR__.'/../../MyElefant.php';
+require_once __DIR__.'/../../LegacyMyElefant.php';
 require_once __DIR__.'/FakeMyElefant.php';
 require_once __DIR__.'/../../../vendor/autoload.php';
 
 use mageekguy\atoum;
-use MyElefant\MyElefant as classToTest;
+use myelefant\LegacyMyElefant as classToTest;
 use DateTime;
 use Symfony\Component\Yaml\Yaml;
 use Exception;
@@ -18,7 +18,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
 use Dotenv;
 
-class MyElefant extends atoum\test
+class LegacyMyElefant extends atoum\test
 {  
     public function testGetDate()
     {
@@ -91,12 +91,6 @@ class MyElefant extends atoum\test
 
         ->then
             ->exception(function(){
-                $this->testedInstance->getContact();
-            })
-            ->isInstanceOf('TypeError')
-
-        ->then
-            ->exception(function(){
                 $this->testedInstance->getContact([['3362739','Timothy']]);
             })
             ->hasMessage('3362739 '.$yamlDatas['CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT'])
@@ -117,7 +111,7 @@ class MyElefant extends atoum\test
             ->exception(function(){
                 $this->testedInstance->getContact('33612345618');
             })
-            ->isInstanceOf('TypeError')
+            ->isInstanceOf('Exception')
         ;
     }
 
@@ -141,12 +135,14 @@ class MyElefant extends atoum\test
                 ->variable($this->testedInstance->checkPhoneNumber('Blabla'))
                     ->isIdenticalTo(false)
             ->then
-                    ->exception(function(){
+                ->when(
+                    function() {
                         $this->testedInstance->checkPhoneNumber();
-                    })
-                    ->isInstanceOf('TypeError')
-                ;
-
+                    }
+                )
+                ->error()
+                    ->withType(E_WARNING)
+                    ->exists();
     }
 
     public function TestGetSender(){
@@ -216,33 +212,25 @@ class MyElefant extends atoum\test
         ->then
 		    ->variable($this->testedInstance->CheckContactsFormat([['33612345618','Jean'],'33612345617','Alfred']))
             ->isIdenticalTo(false)
-
         ->then
-            ->exception(function(){
-                $this->testedInstance->CheckContactsFormat();
-            })
-            ->isInstanceOf('TypeError')        
-        ;
+            ->when(
+                function() {
+                    $this->testedInstance->CheckContactsFormat();
+                }
+            )
+            ->error()
+                ->withType(E_WARNING)
+                ->exists();
 
-    }
-
-    public function testSetLog(){
-        $this
-            ->if($this->newTestedInstance)
-                ->exception(function(){
-                    $this->testedInstance->setLog();
-                })
-                ->isInstanceOf('TypeError')        
-            ;
     }
 
     public function testInitLogger(){
         $object = new classToTest;
         $logger = $object->initLogger('name', 'path');
         $this
-            ->if($this->newTestedInstance)
-                ->object($logger)
-                ->isInstanceOf('Monolog\Logger');
+        ->if($this->newTestedInstance)
+            ->object($logger)
+            ->isInstanceOf('Monolog\Logger');
 
     }
 
