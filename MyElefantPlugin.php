@@ -1,7 +1,7 @@
 <?php
 use myelefant\MyElefant;
 
-class myelefantplugin
+class MyElefantPlugin
 {
     /**
      * @param array Contact

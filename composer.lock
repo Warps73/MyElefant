@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec82d24168d42023f92487d65d3fddfd",
+    "content-hash": "7db3e6e2e4110f1eff1be814b09282d9",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -573,16 +573,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v3.3.0",
+            "version": "v3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "21c540a936c0185ac4148988be3ead7f39069ae6"
+                "reference": "22165d04b0a047abbfe35fd7b10e7707ad9efe5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/21c540a936c0185ac4148988be3ead7f39069ae6",
-                "reference": "21c540a936c0185ac4148988be3ead7f39069ae6",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/22165d04b0a047abbfe35fd7b10e7707ad9efe5b",
+                "reference": "22165d04b0a047abbfe35fd7b10e7707ad9efe5b",
                 "shasum": ""
             },
             "require": {
@@ -621,7 +621,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2019-01-26T16:57:11+00:00"
+            "time": "2019-01-29T11:15:07+00:00"
         }
     ],
     "packages-dev": [

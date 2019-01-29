@@ -11,6 +11,8 @@ https://platform.myelefant.com/api-doc.html
 
 ## Configuration
 
+Php ^7.0
+
 Your MyElefant secret Key https://platform.myelefant.com/user/options/
 
 Create Campaign :

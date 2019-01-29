@@ -1,5 +1,5 @@
 {
-    "name": "timothy/myelefant",
+    "name": "digitre-group/myelefant",
     "description": "MyElefant send sms api",
     "type": "composer-plugin",
     "license": "MIT",
