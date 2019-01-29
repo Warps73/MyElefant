@@ -13,19 +13,24 @@ https://platform.myelefant.com/api-doc.html
 
 Php ^7.0
 
-Your MyElefant secret Key https://platform.myelefant.com/user/options/
+Your  [MyElefant](https://platform.myelefant.com/user/options/) secret Key
 
-Create Campaign :
+**Create Campaign :**
 
 The creation of a campaign is done by duplicating an existing one. You can customize your application on the myElefant interface and then automatically schedule similar campaigns to be sent.
 
-Campaign UUID :
+**Campaign UUID :**
 
 When the campaign is created, a campaignId is created too.
 This ID is displayed in the list of your campaigns when you click on "Show IDs".
 
 ## Installation
 
-
+    composer require 
 ## Usage
+
+Call MyElefantPlugin.php for send a campaign
+
+
+    new MyElefantPlugin(All parameters)
 
