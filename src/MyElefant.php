@@ -1,4 +1,11 @@
 <?php
+/**
+ * Class MyElefant
+ * For send sms with myElefant service
+ * https://myelefant.com/
+ */
+
+
 namespace myelefant;
 
 use Dotenv;
@@ -134,7 +141,7 @@ class MyElefant
 
     /**
      * @param array contact [[33612345678]]
-     * @param string|null Send date '2019-01-20 12:00' if null Date = now
+     * @param string|null Send date '2019-01-20 12:00' if empty Date = now
      * @param string|null Message to send
      * @param string|null Sender
      * @return void
@@ -178,7 +185,7 @@ class MyElefant
 
     /**
      * @param string
-     * @return string|Exception
+     * @return string
      */
 
     public function getMessage($message){
@@ -255,7 +262,7 @@ class MyElefant
      * @return string|void
      */
 
-    public function getSender( $sender, $message){
+    public function getSender($sender, $message){
 
         if ($sender == null && $message == null) {
             return;
