@@ -1,4 +1,4 @@
-APP_ENV : dev
+APP_ENV : prod
 CAMPAIGN_NAME : Lead
 CREDIT_REMAINING : remaining credit
 CRITICAL_MESSAGE_CONTACT_FORMAT : Contact must be a multidimensional array. Example [['33601020304', 'John','Doe']]

@@ -1,7 +1,7 @@
 {
-    "name": "digitre-group/myelefant",
+    "name": "digitregroup/myelefant",
     "description": "MyElefant send sms api",
-    "type": "composer-plugin",
+    "type": "plugin",
     "license": "MIT",
     "require": {
         "guzzlehttp/guzzle": "^6.3",
@@ -11,8 +11,8 @@
     },
     "authors": [
         {
-            "name": "Timothy",
-            "email": "Timothy.prefol@digitgroup.com"
+            "name": "PREFOL Timothy",
+            "email": "Timothy.prefol@digitregroup.com"
         }
     ],
     "require-dev": {
