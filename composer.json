@@ -5,19 +5,18 @@
     "license": "MIT",
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "vlucas/phpdotenv": "^3.1",
-        "monolog/monolog": "^1.24",
-        "symfony/yaml": "3.4.21"
+        "monolog/monolog": "^1.24"
     },
     "authors": [
         {
             "name": "PREFOL Timothy",
-            "email": "Timothy.prefol@digitregroup.com"
+            "email": "timothy.prefol@digitregroup.com"
         }
     ],
     "require-dev": {
         "atoum/atoum": "^3.3",
-        "atoum/stubs": "^2.6"
+        "atoum/stubs": "^2.6",
+        "squizlabs/php_codesniffer": "^3.4"
     },
     "autoload": {
         "psr-4": {
