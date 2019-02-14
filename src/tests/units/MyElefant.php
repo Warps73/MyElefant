@@ -2,7 +2,7 @@
 
 namespace tests\units\MyElefant;
 
-require_once __DIR__.'/atoum.phar';
+//require_once __DIR__.'/atoum.phar';
 require_once __DIR__.'/../../MyElefant.php';
 require_once __DIR__.'/../../MyElefantConfig.php';
 require_once __DIR__.'/FakeMyElefant.php';

@@ -108,7 +108,7 @@ jobs:
     steps:
       - checkout
 
-      - *restore_composer_cache
+#      - *restore_composer_cache
 
       - run:
           name: Install vendors
@@ -127,7 +127,7 @@ jobs:
     steps:
       - checkout
 
-      - *restore_composer_cache
+#      - *restore_composer_cache
 
       - run:
           name: Install vendors
@@ -146,7 +146,7 @@ jobs:
     steps:
       - checkout
 
-      - *restore_composer_cache
+#      - *restore_composer_cache
 
       - run:
           name: Install vendors
@@ -156,7 +156,8 @@ jobs:
       
       - run:
           name: Run unit tests
-          command: cd src/tests/units && php MyElefant.php
+          command: cd vendor/atoum/atoum/bin && php atoum -d ../../../../src/tests/units
+
 
       - *save_workspace
 
