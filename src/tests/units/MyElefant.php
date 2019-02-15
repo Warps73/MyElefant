@@ -2,21 +2,17 @@
 
 namespace tests\units\MyElefant;
 
-//require_once __DIR__.'/atoum.phar';
 require_once __DIR__.'/../../MyElefant.php';
 require_once __DIR__.'/../../MyElefantConfig.php';
 require_once __DIR__.'/FakeMyElefant.php';
-require_once __DIR__.'/../../../vendor/autoload.php';
 
-use mageekguy\atoum;
 use DateTime;
 use tests\units\FakeMyElefant;
 use myelefant\MyElefantConfig;
+use mageekguy\atoum;
 
 class MyElefant extends atoum\test
 {
-
-    
     public function testSetDate()
     {
         $this->mockGenerator->shunt('__construct');
@@ -61,7 +57,7 @@ class MyElefant extends atoum\test
                 ->isInstanceOf('Exception')
             ;
     }
-    
+
     public function testSetMessage()
     {
         $this->mockGenerator->shunt('__construct');

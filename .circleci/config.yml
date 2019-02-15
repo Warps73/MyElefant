@@ -188,7 +188,7 @@ jobs:
           name: Run unit tests
           command: composer test
 
-#      - *save_workspace
+      - *save_workspace
 
 workflows:
   version: 2

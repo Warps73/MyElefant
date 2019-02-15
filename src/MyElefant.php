@@ -1,4 +1,6 @@
-<?php namespace myelefant;
+<?php
+
+namespace myelefant;
 
 /**
  * MyElefant plugin
