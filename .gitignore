@@ -1,4 +1,5 @@
-.env
 vendor/
 *.log
 doc/
+.idea
+var/

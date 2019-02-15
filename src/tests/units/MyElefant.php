@@ -2,262 +2,252 @@
 
 namespace tests\units\MyElefant;
 
-require_once __DIR__.'/atoum.phar';
-include_once __DIR__.'/../../MyElefant.php';
+require_once __DIR__.'/../../MyElefant.php';
+require_once __DIR__.'/../../MyElefantConfig.php';
 require_once __DIR__.'/FakeMyElefant.php';
 
-use mageekguy\atoum;
-use MyElefant\MyElefant as classToTest;
 use DateTime;
-use Symfony\Component\Yaml\Yaml;
-use Exception;
 use tests\units\FakeMyElefant;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Monolog\Handler\FirePHPHandler;
-use Dotenv;
+use myelefant\MyElefantConfig;
+use mageekguy\atoum;
 
 class MyElefant extends atoum\test
-{  
-    public function testGetDate()
+{
+    public function testSetDate()
     {
+        $this->mockGenerator->shunt('__construct');
         $this
         ->given(
-                $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml'),
-                $currentDate = new DateTime('now')
-                )
-            ->if($this->newTestedInstance)
+            $currentDate = new DateTime('now'),
+            $myElefantMock = new \mock\MyElefant\MyElefant([])
+        )
+            ->then
+                ->string($this->invoke($myElefantMock)->setDate('2019-12-03 12:00'))
+                ->isEqualTo('2019-12-03 12:00')
 
             ->then
-                ->string($this->testedInstance->getDate('2019-12-03 12:00'))
-                    ->isEqualTo('2019-12-03 12:00')
-
-            ->then
-                ->string($this->testedInstance->getDate())
+                ->string($this->invoke($myElefantMock)->setDate())
                 ->isEqualTo($currentDate->format('Y-m-d H:i'))
 
             ->then
-                ->exception(function(){
-                    $this->testedInstance->getDate('asrere');
-                })
-                ->hasMessage($yamlDatas['CRITICAL_MESSAGE_DATE_FORMAT'])
+                ->exception(
+                    function () {
+                        $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                        $this->invoke($myElefantMock)->setDate('asrere');
+                    }
+                )
+                ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_DATE_FORMAT)
 
             ->then
-                ->exception(function(){
-                    $this->testedInstance->getDate('2018-01-24 12:00');
-                })
-                ->hasMessage($yamlDatas['CRITICAL_MESSAGE_DATE'])
+                ->exception(
+                    function () {
+                        $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                        $this->invoke($myElefantMock)->setDate('2018-01-24 12:00');
+                    }
+                )
+                ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_DATE)
 
             ->then
-                ->exception(function(){
-                    $this->testedInstance->getDate('2018-20-64 12:00');
-                })
+                ->exception(
+                    function () {
+                        $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                        $this->invoke($myElefantMock)->setDate('2018-20-64 12:00');
+                    }
+                )
                 ->isInstanceOf('Exception')
             ;
     }
-    
-    public function testGetMessage()
+
+    public function testSetMessage()
     {
+        $this->mockGenerator->shunt('__construct');
         $this
-            ->if($this->newTestedInstance)
-                ->given(
-                    $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml'),
-                )
+        ->given(
+            $myElefantMock = new \mock\MyElefant\MyElefant([])
+        )
             ->then
-                ->string($this->testedInstance->getMessage('I\'m message'))
+                ->string($this->invoke($myElefantMock)->setMessage('I\'m message'))
                     ->isEqualTo('I\'m message')
 
             ->then
-                ->exception(function(){
-                    $longText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula, nulla vitae fringilla dapibus, nunc sem feugiat lorem, gravida aliquet eros lacus id sem viverra fusce.";
-                    $this->testedInstance->getMessage($longText);
-                })
-                ->hasMessage($yamlDatas['WARNING_MESSAGE_LENGTH'])
+                ->exception(
+                    function () {
+                        $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                        $longText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula,
+                                     nulla vitae fringilla dapibus, nunc sem feugiat lorem,
+                                     gravida aliquet eros lacus id sem viverra fusce.";
+                        $this->invoke($myElefantMock)->setMessage($longText);
+                    }
+                )
+                ->hasMessage(MyElefantConfig::WARNING_MESSAGE_LENGTH)
             ;
     }
 
-    public function testGetContact()
+    public function testSetContact()
     {
-        
+        $this->mockGenerator->shunt('__construct');
         $this
-            ->if($this->newTestedInstance)
-            ->given(
-                $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml'),
-            )
+        ->given(
+            $myElefantMock = new \mock\MyElefant\MyElefant([])
+        )
         ->then
-            ->array($this->testedInstance->getContact([['33612345618','Timothy']]))
+            ->array($this->invoke($myElefantMock)->setContact([['33612345618','Timothy']]))
             ->isEqualTo([['33612345618','Timothy']])
 
         ->then
-            ->exception(function(){
-                $this->testedInstance->getContact();
-            })
-            ->isInstanceOf('TypeError')
+            ->exception(
+                function () {
+                    $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                    $this->invoke($myElefantMock)->setContact([['3362739','Timothy']]);
+                }
+            )
+            ->hasMessage('3362739 '.MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT)
 
         ->then
-            ->exception(function(){
-                $this->testedInstance->getContact([['3362739','Timothy']]);
-            })
-            ->hasMessage('3362739 '.$yamlDatas['CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT'])
+            ->exception(
+                function () {
+                    $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                    $this->invoke($myElefantMock)->setContact([['33612345618','Timothy'],'33612345618','Timothy']);
+                }
+            )
+            ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_CONTACT_FORMAT)
 
         ->then
-            ->exception(function(){
-                $this->testedInstance->getContact([['33612345618','Timothy'],'33612345618','Timothy']);
-            })
-            ->hasMessage($yamlDatas['CRITICAL_MESSAGE_CONTACT_FORMAT'])
+            ->exception(
+                function () {
+                    $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                    $this->invoke($myElefantMock)->setContact(['33612345618','Timothy']);
+                }
+            )
+            ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_CONTACT_FORMAT)
 
         ->then
-            ->exception(function(){
-                $this->testedInstance->getContact(['33612345618','Timothy']);
-            })
-            ->hasMessage($yamlDatas['CRITICAL_MESSAGE_CONTACT_FORMAT'])
-
-        ->then
-            ->exception(function(){
-                $this->testedInstance->getContact('33612345618');
-            })
-            ->isInstanceOf('TypeError')
+            ->exception(
+                function () {
+                    $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                    $this->invoke($myElefantMock)->setContact('33612345618');
+                }
+            )
+            ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_CONTACT_FORMAT)
         ;
     }
 
     public function testCheckPhoneNumber()
     {
+        $this->mockGenerator->shunt('__construct');
         $this
-            ->if($this->newTestedInstance)
-
+        ->given(
+            $myElefantMock = new \mock\MyElefant\MyElefant([])
+        )
             ->then
-                ->variable($this->testedInstance->checkPhoneNumber('33612345618'))
+                ->variable($this->invoke($myElefantMock)->checkPhoneNumber('33612345618'))
                     ->isIdenticalTo(true)
 
             ->then
-                ->variable($this->testedInstance->checkPhoneNumber('0612345618'))
+                ->variable($this->invoke($myElefantMock)->checkPhoneNumber('0612345618'))
                     ->isIdenticalTo(false)
 
             ->then
-                ->variable($this->testedInstance->checkPhoneNumber('+33612345618'))
+                ->variable($this->invoke($myElefantMock)->checkPhoneNumber('+33612345618'))
                     ->isIdenticalTo(false)
             ->then
-                ->variable($this->testedInstance->checkPhoneNumber('Blabla'))
+                ->variable($this->invoke($myElefantMock)->checkPhoneNumber('Blabla'))
                     ->isIdenticalTo(false)
-            ->then
-                    ->exception(function(){
-                        $this->testedInstance->checkPhoneNumber();
-                    })
-                    ->isInstanceOf('TypeError')
                 ;
-
     }
 
-    public function TestGetSender(){
+    public function testSetAuthentification()
+    {
         $this
-            ->if($this->newTestedInstance)
+        ->given($MyElefantFaker = new FakeMyElefant)
+        ->variable($this->invoke($MyElefantFaker)->setAuthentification('ADN9DSQKNLDSQ1515SDQMPDS'))
+        ->isIdenticalTo(200)
+        ->then
+        ->exception(
+            function () {
+                $MyElefantFaker = new FakeMyElefant;
+                $this->invoke($MyElefantFaker)->setAuthentification('ASDQDQSDQSS1561');
+            }
+        )
+        ->isInstanceOf('Exception');
+    }
 
-            ->given(
-                $yamlDatas = Yaml::parseFile(__DIR__.'/../../../MyElefant.yaml')
+    public function testSendSms()
+    {
+        $this
+        ->given($MyElefantFaker = new FakeMyElefant)
+            ->variable(
+                $MyElefantFaker->sendSms(
+                    'campaignId',
+                    'campaignName',
+                    'validToken',
+                    [['validContacts']],
+                    'validDate',
+                    'validMessage',
+                    'validSender'
+                )
             )
-
-            ->then
-                ->variable($this->testedInstance->getSender(null, null))
-                ->isIdenticalTo(null)
-
-            ->then
-                ->variable($this->testedInstance->getSender(null, 'message'))
-                ->isIdenticalTo($yamlDatas['DEFAULT_SENDER'])
-
-            ->then
-                ->string($this->testedInstance->getSender('sender', 'message'))
-                ->isIdenticalTo('sender')
-            ->then
-                ->exception(function(){
-                    $this->testedInstance->getSender('sender');
-                })
-                ->isInstanceOf('TypeError')
-            ;
-
-    }
-    
-    public function TestGetAuthentification(){
-        $this
-            ->given($m = new FakeMyElefant)
-		    ->variable($m->getAuthentification('ADN9DSQKNLDSQ1515SDQMPDS'))
-            ->isIdenticalTo('TheSecretToken')
+            ->isIdenticalTo(200)
         ->then
-            ->variable($m->getAuthentification('ASDQDQSDQSS1561'))
-            ->isIdenticalTo(false);
-
+            ->exception(
+                function () {
+                    $MyElefantFaker = new FakeMyElefant;
+                    $MyElefantFaker->sendSms(
+                        'campaignId',
+                        'campaignName',
+                        'invalidToken',
+                        [['validContacts']],
+                        'validDate',
+                        'validMessage',
+                        'validSender'
+                    );
+                }
+            )
+        ->isInstanceOf('Exception');
     }
 
-    public function TestSendSms(){
+    public function testCheckFields()
+    {
+        $this->mockGenerator->shunt('__construct');
         $this
-            ->given($m = new FakeMyElefant)
-		    ->variable($m->sendSms('validToken',[['validContacts']],'validDate','validMessage','validSender'))
-            ->isIdenticalTo('success')
+        ->given(
+            $myElefantMock = new \mock\MyElefant\MyElefant([])
+        )
+        ->variable($this->invoke($myElefantMock)->checkFields('message', 'sender'))
+        ->isIdenticalTo(true)
         ->then
-            ->variable($m->sendSms('invalidToken',[['validContacts']],'validDate','validMessage','validSender'))
-            ->isIdenticalTo('invalid token')
-        ;
-
-    }
-
-    public function TestCheckFields(){
-        $this
-            ->if($this->newTestedInstance)
-		    ->variable($this->testedInstance->checkFields('message','sender'))
-            ->isIdenticalTo(true)
-        ->then
-            ->variable($this->testedInstance->checkFields(null,'sender'))
+            ->variable($this->invoke($myElefantMock)->checkFields(null, 'sender'))
             ->isIdenticalTo(false)
-        ->then
-            ->exception(function(){
-                $this->testedInstance->checkFields();
-            })
-            ->isInstanceOf('TypeError')
-        ->then
-            ->exception(function(){
-                $this->testedInstance->checkFields('message');
-            })
-            ->isInstanceOf('TypeError')
         ;
-
     }
 
-    public function testCheckContactsFormat(){
+    public function testCheckContactsFormat()
+    {
+        $this->mockGenerator->shunt('__construct');
         $this
-            ->if($this->newTestedInstance)
-		    ->variable($this->testedInstance->CheckContactsFormat([['33612345618','Jean'],['33612345617','Alfred']]))
-            ->isIdenticalTo(true)
+        ->given(
+            $myElefantMock = new \mock\MyElefant\MyElefant([])
+        )
+        ->variable($this->invoke($myElefantMock)->CheckContactsFormat([['33612345618', 'Jean'], ['33612345617', 'Alfred']]))
+        ->isIdenticalTo(true)
 
         ->then
-		    ->variable($this->testedInstance->CheckContactsFormat([['33612345618','Jean'],'33612345617','Alfred']))
+            ->variable($this->invoke($myElefantMock)->CheckContactsFormat([['33612345618', 'Jean'], '33612345617', 'Alfred']))
             ->isIdenticalTo(false)
 
-        ->then
-            ->exception(function(){
-                $this->testedInstance->CheckContactsFormat();
-            })
-            ->isInstanceOf('TypeError')        
-        ;
-
-    }
-
-    public function testSetLog(){
-        $this
-        ->if($this->newTestedInstance)
-            ->exception(function(){
-                $this->testedInstance->setLog();
-            })
-            ->isInstanceOf('TypeError')        
         ;
     }
 
-    public function testInitLogger(){
-        $object = new classToTest;
-        $logger = $object->initLogger('name', 'path');
+    public function testInitLogger()
+    {
+        $this->mockGenerator->shunt('__construct');
+
         $this
-        ->if($this->newTestedInstance)
+        ->given(
+            $myElefantMock = new \mock\MyElefant\MyElefant([]),
+            $logger = $this->invoke($myElefantMock)->initLogger('name', 'path')
+        )
             ->object($logger)
             ->isInstanceOf('Monolog\Logger');
-
     }
-
 }
