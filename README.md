@@ -1,5 +1,9 @@
 # MyElefant
 
+[![CircleCI](https://circleci.com/gh/digitregroup/php-myelefant-client.svg?style=shield)](https://circleci.com/gh/digitregroup/php-myelefant-client)
+[![Latest Stable Version](https://poser.pugx.org/digitregroup/php-myelefant-client/version)](https://packagist.org/packages/digitregroup/php-myelefant-client)
+[![Total Downloads](https://poser.pugx.org/digitregroup/php-myelefant-client/downloads)](https://packagist.org/packages/digitregroup/php-myelefant-client)
+
 MyElefant is a service for sending sms / push notifications etc...
 
 https://myelefant.com/
@@ -29,7 +33,7 @@ This ID is displayed in the list of your campaigns when you click on "Show IDs".
 
 # Installation
 
-    composer require 
+    composer require digitregroup/php-myelefant-client
 
 **Usage**
 
@@ -41,6 +45,8 @@ To send a new campaign :
 
 
         <?php
+
+        use myelefant\MyElefant;
 
         $client = new MyElefant(['secretKey' => '***SECRET_KEY***'])
 

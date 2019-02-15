@@ -1,6 +1,6 @@
 {
     "name": "digitregroup/php-myelefant-client",
-    "description": "MyElefant send sms api",
+    "description": "myElefant PHP Client - myElefant is able to send SMS, Facebook Messenger, Push, Viber, Wechat, RCS",
     "type": "plugin",
     "license": "MIT",
     "require": {
