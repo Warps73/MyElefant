@@ -23,5 +23,8 @@
         "psr-4": {
             "myelefant\\": "src/"
         }
+    },
+    "scripts": {
+        "test": "atoum -d ./src/tests/units"
     }
 }
