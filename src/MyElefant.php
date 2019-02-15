@@ -48,11 +48,12 @@ class MyElefant
         if (isset($config['debug']) === true) {
             $this->error = $this->initLogger(
                 'error',
-                'var/log/error.log'
+                MyElefantConfig::PATH_ERROR_LOG
+
             );
             $this->info  = $this->initLogger(
                 'info',
-                'var/log/info.log'
+                MyElefantConfig::PATH_INFO_LOG
             );
         }
 

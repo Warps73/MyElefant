@@ -13,6 +13,8 @@ abstract class MyElefantConfig
     const CRITICAL_MESSAGE_EMPTY_MESSAGE = 'If you specify a sender the message cannot be empty';
     const CRITICAL_MESSAGE_EMPTY_SECRET_KEY = 'You must provide secret key';
     const MAX_LENGTH_MESSAGE = 160;
+    const PATH_ERROR_LOG = 'var/log/error.log';
+    const PATH_INFO_LOG = 'var/log/info.log';
     const REGEX_PHONE_NUMBER = '/^[0-9]{2}[0-9]{9}$/';
     const SUCCESS_MESSAGE = 'Message sent correctly';
     const URL_MYELEFANT_API = 'https://api.myelefant.com';
