@@ -1,12 +1,11 @@
 {
-    "name": "digitregroup/myelefant",
+    "name": "digitregroup/php-myelefant-client",
     "description": "MyElefant send sms api",
     "type": "plugin",
     "license": "MIT",
     "require": {
         "guzzlehttp/guzzle": "^6.3",
         "monolog/monolog": "^1.24"
-
     },
     "authors": [
         {
