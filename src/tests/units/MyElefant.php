@@ -159,25 +159,25 @@ class MyElefant extends atoum\test
     public function testSetAuthentification()
     {
         $this
-        ->given($MyElefantFaker = new FakeMyElefant)
-        ->variable($this->invoke($MyElefantFaker)->setAuthentification('ADN9DSQKNLDSQ1515SDQMPDS'))
+        ->given($myElefantFaker = new FakeMyElefant)
+        ->variable($this->invoke($myElefantFaker)->setAuthentification('ADN9DSQKNLDSQ1515SDQMPDS'))
         ->isIdenticalTo(200)
         ->then
         ->exception(
             function () {
-                $MyElefantFaker = new FakeMyElefant;
-                $this->invoke($MyElefantFaker)->setAuthentification('ASDQDQSDQSS1561');
+                $myElefantFaker = new FakeMyElefant;
+                $this->invoke($myElefantFaker)->setAuthentification('ASDQDQSDQSS1561');
             }
         )
         ->isInstanceOf('Exception');
     }
 
-    public function testSendSms()
+    public function testCreateCampaign()
     {
         $this
-        ->given($MyElefantFaker = new FakeMyElefant)
+        ->given($myElefantFaker = new FakeMyElefant)
             ->variable(
-                $MyElefantFaker->sendSms(
+                $myElefantFaker->createCampaign(
                     'campaignId',
                     'campaignName',
                     'validToken',
@@ -191,8 +191,8 @@ class MyElefant extends atoum\test
         ->then
             ->exception(
                 function () {
-                    $MyElefantFaker = new FakeMyElefant;
-                    $MyElefantFaker->sendSms(
+                    $myElefantFaker = new FakeMyElefant;
+                    $myElefantFaker->createCampaign(
                         'campaignId',
                         'campaignName',
                         'invalidToken',
@@ -238,6 +238,27 @@ class MyElefant extends atoum\test
         ;
     }
 
+    public function testCheckSendSmsContentFormat()
+    {
+        $this->mockGenerator->shunt('__construct');
+        $this
+        ->given(
+            $myElefantMock = new \mock\MyElefant\MyElefant([])
+        )
+            ->variable($this->invoke($myElefantMock)->checkSendSmsContentFormat(['33612345618', 'Jean', '33612345617', 'Alfred']))
+            ->isIdenticalTo(true)
+        ->then
+            ->exception(
+                function () {
+                    $myElefantFaker = new FakeMyElefant;
+                    $this->invoke($myElefantFaker)->checkSendSmsContentFormat('33612345618');
+                }
+            )
+            ->isInstanceOf('Exception');
+
+        ;
+    }
+
     public function testInitLogger()
     {
         $this->mockGenerator->shunt('__construct');
@@ -249,5 +270,32 @@ class MyElefant extends atoum\test
         )
             ->object($logger)
             ->isInstanceOf('Monolog\Logger');
+    }
+
+    public function testSendSms()
+    {
+        $this
+            ->given($myElefantFaker = new FakeMyElefant)
+            ->variable(
+                $myElefantFaker->sendSms(
+                    'campaignId',
+                    'campaignName',
+                    'validToken'
+
+                )
+            )
+            ->isIdenticalTo(200)
+            ->then
+            ->exception(
+                function () {
+                    $myElefantFaker = new FakeMyElefant;
+                    $myElefantFaker->sendSms(
+                        'campaignId',
+                        'campaignName',
+                        'invalid token'
+                    );
+                }
+            )
+            ->isInstanceOf('Exception');
     }
 }
