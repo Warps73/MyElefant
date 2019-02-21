@@ -71,19 +71,49 @@ node_config: &node_config
   <<: *working_directory
 
 # Download cached php dependencies
-restore_composer_cache: &restore_composer_cache
+restore_composer_cache_5_6: &restore_composer_cache_5_6
   restore_cache:
       keys:
-        - composer-dependencies-{{ checksum "composer.json" }}
+        - composer-dependencies_5_6-{{ checksum "composer.json" }}
         # fallback to using the latest cache if no exact match is found
-        - composer-dependencies-
+        - composer-dependencies_5_6-
 
 # Save php cache dependencies
-save_composer_cache: &save_composer_cache
+save_composer_cache_5_6: &save_composer_cache_5_6
   save_cache:
     paths:
       - vendor
-    key: composer-dependencies-{{ checksum "composer.json" }}
+    key: composer-dependencies_5_6-{{ checksum "composer.json" }}
+
+# Download cached php dependencies
+restore_composer_cache_7_0: &restore_composer_cache_7_0
+  restore_cache:
+      keys:
+        - composer-dependencies_7_0-{{ checksum "composer.json" }}
+        # fallback to using the latest cache if no exact match is found
+        - composer-dependencies_7_0-
+
+# Save php cache dependencies
+save_composer_cache_7_0: &save_composer_cache_7_0
+  save_cache:
+    paths:
+      - vendor
+    key: composer-dependencies_7_0-{{ checksum "composer.json" }}
+
+# Download cached php dependencies
+restore_composer_cache_7_1: &restore_composer_cache_7_1
+  restore_cache:
+      keys:
+        - composer-dependencies_7_1-{{ checksum "composer.json" }}
+        # fallback to using the latest cache if no exact match is found
+        - composer-dependencies_7_1-
+
+# Save php cache dependencies
+save_composer_cache_7_1: &save_composer_cache_7_1
+  save_cache:
+    paths:
+      - vendor
+    key: composer-dependencies_7_1-{{ checksum "composer.json" }}
 
 # Download cached workspace
 restore_workspace: &restore_workspace
@@ -108,55 +138,55 @@ jobs:
     steps:
       - checkout
 
-      - *restore_composer_cache
+      - *restore_composer_cache_5_6
 
       - run:
           name: Install vendors
           command: composer install
 
-      - *save_composer_cache
+      - *save_composer_cache_5_6
       
       - run:
           name: Run unit tests
-          command: cd src/tests/units && php LegacyMyElefant.php
+          command: composer test
 
-      - *save_workspace
+#      - *save_workspace
 
   test_php70:
     <<: *php70_config
     steps:
       - checkout
 
-      - *restore_composer_cache
+      - *restore_composer_cache_7_0
 
       - run:
           name: Install vendors
           command: composer install
 
-      - *save_composer_cache
+      - *save_composer_cache_7_0
       
       - run:
           name: Run unit tests
-          command: cd src/tests/units && php MyElefant.php
+          command: composer test
 
-      - *save_workspace
+#      - *save_workspace
 
   test_php71:
     <<: *php71_config
     steps:
       - checkout
 
-      - *restore_composer_cache
+      - *restore_composer_cache_7_1
 
       - run:
           name: Install vendors
           command: composer install
 
-      - *save_composer_cache
+      - *save_composer_cache_7_1
       
       - run:
           name: Run unit tests
-          command: cd src/tests/units && php MyElefant.php
+          command: composer test
 
       - *save_workspace
 

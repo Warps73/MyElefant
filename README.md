@@ -1,16 +1,20 @@
 # MyElefant
 
-MyElefant is a service for send sms / push notification etc...
+[![CircleCI](https://circleci.com/gh/digitregroup/php-myelefant-client.svg?style=shield)](https://circleci.com/gh/digitregroup/php-myelefant-client)
+[![Latest Stable Version](https://poser.pugx.org/digitregroup/php-myelefant-client/version)](https://packagist.org/packages/digitregroup/php-myelefant-client)
+[![Total Downloads](https://poser.pugx.org/digitregroup/php-myelefant-client/downloads)](https://packagist.org/packages/digitregroup/php-myelefant-client)
+
+MyElefant is a service for sending sms / push notifications etc...
 
 https://myelefant.com/
 
-This plugin is for send sms campaign with MyElefant's APIs.
+This plugin is for sending sms campaigns with MyElefant's APIs.
 
 https://platform.myelefant.com/api-doc.html
 
 # Configuration
 
-Php ^7.0
+Php ^5.6
 
 # Before use
 
@@ -29,77 +33,84 @@ This ID is displayed in the list of your campaigns when you click on "Show IDs".
 
 # Installation
 
-    composer require digitregroup/myelefant
+    composer require digitregroup/php-myelefant-client
 
-# Usage
+**Usage**
 
-In .env file provide your campaign uuid and your secret key.
+You can send a campaign with the parameters provided when creating the campaign (message and sender) or by using custom parameters.
 
-    CAMPAIGN_LEAD_ID = your_campaign_uuid
-    SECRET_KEY = your_secret_key
+To send a new campaign : 
 
-**Default usage**
+- With your custom's parameters:
 
-For send a new campaign you have to provide many parameters : 
+
+        <?php
+
+        use myelefant\MyElefant;
+
+        $client = new MyElefant(['secretKey' => '***SECRET_KEY***'])
+
+        $client->sendSms(
+                        'campaignId',
+                         'campaignName',
+                         [['33612345678',(optional)'Name',(optional)'Surname']],
+                         '2019-01-01 12:00',
+                         'Your message',
+                         'Your sender'
+                        );
+
+
+- With default template's parameters
+
+        <?php
+
+        $client = new MyElefant(['secretKey' => '***SECRET_KEY***'])
+
+        $client->sendSms(
+            'campaignId',
+            'campaignName',
+            [['33612345678',(optional)'Name',(optional)'Surname']],
+            '2019-01-01 12:00'
+            )
+
+Field's formats :
+
+- Secret Key :
+
+    String
+
+- Campaign Id : 
+    
+    String
+
+- Campaign name
+
+    String
 
 - Contact :
 
-    It's a required field, you can provide one or many contact 
+    Multidimensional array
             
         Example: [['33611223344',(optionnal)'John',(optionnal)'Doe'],[...]]
 
 - Send Date :
 
-    The send date is an optional parameter, if empty it takes a current date value.
+    String
 
-        Example : 'Y-m-d H:i' | '2019-01-25 12:59'
-        /!\Send Date must be a string
+        Example : 'Y-m-d H:i' -> '2019-01-25 12:59'
 
 - Message :
 
-    Message must be a string
+    String
 
 - Sender :
 
-    Sender must be a string
-
-
-**For Message and Sender, you have 3 usages possible**
-
-Using default values :
-
-- Message : The default message provided in MyElefant application
-
-- Sender : The default sender provided in MyElefant application
-
-Your custom values :
-
-- Message : Your custom message.
-
-- Sender : Your custom sender.
-
-Your can also provide a default sender in MyElefant.yaml
-
-- Message : Your custom message
-
-- Sender : The sender provided in MyElefant.yaml
-
-
-Great ! Now you can call MyElefantPlugin.php file for sending your first campaign :
-
-/!\ Respect options order : /!\
-
-
-
-    new MyElefantPlugin(Your custom parameters);
-
-
+   String
 
 # Debug
 
-For activate log system change this parameter in MyElefant.yaml
+To activate logging system, add this parameter.
 
-    APP_ENV = prod 
-        to
-    APP_ENV = dev
+
+          $client = new MyElefant(['secretKey' => '***SECRET_KEY***', 'debug'=> true])
 
