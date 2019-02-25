@@ -8,11 +8,11 @@ namespace myelefant;
  * https://myelefant.com/
  */
 
-use GuzzleHttp\Client;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use DateTime;
 use Exception;
+use GuzzleHttp\Client;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class MyElefant
 {
@@ -73,6 +73,7 @@ class MyElefant
      *
      * @param string $name Log file's name
      * @param string $path Path to log folder
+     *
      * @throws @Exception
      * @return Logger
      */
@@ -160,7 +161,7 @@ class MyElefant
     }
 
     /**
-     * Sending sms
+     * Creating campaign
      *
      * @param string      $campaignId Campaign's id
      * @param string      $campaignName Campaign's name
@@ -170,9 +171,9 @@ class MyElefant
      * @param string|null $sender Custom sender|Template sender
      *
      * @throws @Exception
-     * @return void
+     * @return bool
      */
-    public function sendSms($campaignId, $campaignName, $contacts, $sendDate = null, $message = null, $sender = null)
+    public function createCampaign($campaignId, $campaignName, $contacts, $sendDate = null, $message = null, $sender = null)
     {
 
         if (!$this->checkFields($message, $sender)) {
@@ -210,13 +211,63 @@ class MyElefant
         if ($response->getStatusCode() == 200) {
             $body     = $response->getBody();
             $arr_body = json_decode($body);
-            if ($arr_body->success == true) {
+            if ($arr_body->success === true) {
                 $this->setLog(
                     'info',
                     MyElefantConfig::SUCCESS_MESSAGE . ', ' . MyElefantConfig::CREDIT_REMAINING . ' ' . $arr_body->solde
                 );
+                return true;
             }
         }
+        return false;
+    }
+
+    /**
+     * Sending sms
+     *
+     * @param string $campaignId Campaign's id
+     * @param array  $content The first argument must be a phone number, next others are optional ['33612345847','Optional content','...']
+     *
+     * @throws @Exception
+     * @return bool
+     */
+    public function sendSms($campaignId, $content)
+    {
+        if (!$this->checkSendSmsContentFormat($content) || !$this->checkPhoneNumber($content[0])) {
+            $this->setLog(
+                'critical',
+                MyElefantConfig::CRITICAL_MESSAGE_CONTENT_FORMAT
+            );
+            throw new Exception($content . ' ' . MyElefantConfig::CRITICAL_MESSAGE_CONTENT_FORMAT);
+        }
+        try {
+            $client   = new Client();
+            $response = $client->request(
+                'POST',
+                MyElefantConfig::URL_MYELEFANT_API . MyElefantConfig::URL_MYELEFANT_API_SEND_SMS,
+                [
+                    'headers' => [
+                        'Authorization' => $this->token,
+                        'Content-Type'  => 'application/json'
+                    ],
+                    'json'    => [
+                        'campaign_uuid' => $campaignId,
+                        'contact'       => $content
+                    ]
+                ]
+            );
+        } catch (\Throwable $e) {
+            $this->setLog('critical', $e->getMessage());
+            throw new Exception($e->getMessage());
+        }
+        if ($response->getStatusCode() == 200) {
+            $body     = $response->getBody();
+            $arr_body = json_decode($body);
+            if ($arr_body->success === true) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -325,7 +376,7 @@ class MyElefant
     }
 
     /**
-     * Checking the format of the contact's array
+     * Checking the format of the contacts array
      *
      * @param array $contacts Contact
      *
@@ -339,5 +390,17 @@ class MyElefant
             }
         }
         return true;
+    }
+
+    /**
+     * Checking the format of the contents array
+     *
+     * @param array $content recipient && optional content. ex: ['33612345678','Optional content','...']
+     *
+     * @return bool Returns true if the content format is valid
+     */
+    private function checkSendSmsContentFormat($content)
+    {
+        return is_array($content);
     }
 }

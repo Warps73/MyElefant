@@ -7,6 +7,8 @@ abstract class MyElefantConfig
     const CREDIT_REMAINING = 'remaining credit';
     const CRITICAL_MESSAGE_CONTACT_FORMAT = 'Contact must be a multidimensional array. 
                                              Example [[\'33601020304\', \'John\',\'Doe\']]';
+    const CRITICAL_MESSAGE_CONTENT_FORMAT = 'Content must be an array and first parameter must be a phone number
+                                             Example [\'33601020304\',\'First content\',\'...\']';
     const CRITICAL_MESSAGE_DATE = 'Date is before the current date';
     const CRITICAL_MESSAGE_DATE_FORMAT = 'Format Date invalid expected yyyy-mm-dd HH:MM';
     const CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT = 'Format phone number invalid expected 33612232305';
@@ -20,5 +22,6 @@ abstract class MyElefantConfig
     const URL_MYELEFANT_API = 'https://api.myelefant.com';
     const URL_MYELEFANT_API_AUTHENTIFICATION = '/v1/token';
     const URL_MYELEFANT_API_CREATE_CAMPAIGN = '/v1/campaign/create';
+    const URL_MYELEFANT_API_SEND_SMS= '/v1/campaign/sendsms';
     const WARNING_MESSAGE_LENGTH = 'Your message is more than 160 characters long';
 }
