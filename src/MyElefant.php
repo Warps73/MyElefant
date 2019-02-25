@@ -264,6 +264,10 @@ class MyElefant
             $body     = $response->getBody();
             $arr_body = json_decode($body);
             if ($arr_body->success === true) {
+                $this->setLog(
+                    'info',
+                    MyElefantConfig::SUCCESS_MESSAGE
+                );
                 return true;
             }
         }
