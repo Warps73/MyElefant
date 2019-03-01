@@ -266,7 +266,7 @@ class MyElefant
             if ($arr_body->success === true) {
                 $this->setLog(
                     'info',
-                    MyElefantConfig::SUCCESS_MESSAGE
+                    MyElefantConfig::SUCCESS_MESSAGE." to ".(implode(", ",$content))
                 );
                 return true;
             }
