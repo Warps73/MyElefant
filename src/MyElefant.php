@@ -257,7 +257,7 @@ class MyElefant
                 ]
             );
         } catch (\Throwable $e) {
-            $this->setLog('critical', $e->getMessage());
+            $this->setLog('critical', $e->getMessage() . " to " . implode(", ", $content));
             throw new Exception($e->getMessage());
         }
         if ($response->getStatusCode() == 200) {
@@ -266,7 +266,7 @@ class MyElefant
             if ($arr_body->success === true) {
                 $this->setLog(
                     'info',
-                    MyElefantConfig::SUCCESS_MESSAGE." to ".(implode(", ",$content))
+                    MyElefantConfig::SUCCESS_MESSAGE . " to " . implode(", ", $content)
                 );
                 return true;
             }
