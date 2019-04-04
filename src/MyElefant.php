@@ -82,7 +82,7 @@ class MyElefant
             throw new Exception(MyElefantConfig::CRITICAL_MESSAGE_EMPTY_SECRET_KEY);
         } else {
             $this->secretKey = $config['secretKey'];
-            $this->token     = 'ZmRmZmZkNzYtNTAwMy00ZmE2LTgwYjItN2QzNzdkYTlhNGYw'; // TODO Change that
+            $this->token     =  $this->setAuthentification($this->secretKey);
         }
     }
 
@@ -226,7 +226,7 @@ class MyElefant
             $this->setLog('critical', $e->getMessage());
             throw new Exception($e->getMessage());
         }
-        if ($response->getStatusCode() == 200) {
+        if ($response->getStatusCode() === 200) {
             $body     = $response->getBody();
             $arr_body = json_decode($body);
             if ($arr_body->success === true) {
@@ -280,7 +280,7 @@ class MyElefant
             throw new Exception($e->getMessage());
         }
 
-        if ($response->getStatusCode() == 200) {
+        if ($response->getStatusCode() === 200) {
             $body     = $response->getBody();
             $arr_body = json_decode($body);
             if ($arr_body->success === true) {
@@ -290,7 +290,7 @@ class MyElefant
                 );
                 return true;
             }
-        } else if ($response->getStatusCode() == 401) {
+        } else if ($response->getStatusCode() === 401) {
             $body     = $response->getBody();
             $arr_body = json_decode($body);
             if ($arr_body->errors->Authorization[0] === "Invalid access token" && $this->tokenFlag === 0) {
@@ -299,7 +299,7 @@ class MyElefant
                 $this->guzzleCatcher = true;
                 $this->setLog(
                     'info',
-                    'Regeneration du token'
+                    MyElefantConfig::REGENERATING_TOKEN
                 );
                 $this->sendSms($campaignId, $content);
             } else {
