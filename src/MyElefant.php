@@ -29,12 +29,30 @@ class MyElefant
      */
     private $info;
 
-
     /**
      * Token
      * @var string
      */
     private $token;
+
+    /**
+     * SecretKey
+     * @var string
+     */
+    private $secretKey;
+
+    /**
+     * Flag to prevent permanent looping on token regeneration
+     * @var integer
+     */
+    private $tokenFlag = 0;
+
+    /**
+     * guzzleCatcher Option to Enable/Disable throwing exceptions
+     * on an HTTP protocol errors (i.e., 4xx and 5xx responses).
+     * @var boolean
+     */
+    private $guzzleCatcher = false;
 
     /**
      * Initialize plugin
@@ -44,7 +62,6 @@ class MyElefant
      */
     public function __construct($config)
     {
-
         if (isset($config['debug']) === true) {
             $this->error = $this->initLogger(
                 'error',
@@ -64,7 +81,8 @@ class MyElefant
             );
             throw new Exception(MyElefantConfig::CRITICAL_MESSAGE_EMPTY_SECRET_KEY);
         } else {
-            $this->token = $this->setAuthentification($config['secretKey']);
+            $this->secretKey = $config['secretKey'];
+            $this->token     =  $this->setAuthentification($this->secretKey);
         }
     }
 
@@ -208,7 +226,7 @@ class MyElefant
             $this->setLog('critical', $e->getMessage());
             throw new Exception($e->getMessage());
         }
-        if ($response->getStatusCode() == 200) {
+        if ($response->getStatusCode() === 200) {
             $body     = $response->getBody();
             $arr_body = json_decode($body);
             if ($arr_body->success === true) {
@@ -246,21 +264,23 @@ class MyElefant
                 'POST',
                 MyElefantConfig::URL_MYELEFANT_API . MyElefantConfig::URL_MYELEFANT_API_SEND_SMS,
                 [
-                    'headers' => [
+                    'headers'     => [
                         'Authorization' => $this->token,
                         'Content-Type'  => 'application/json'
                     ],
-                    'json'    => [
+                    'json'        => [
                         'campaign_uuid' => $campaignId,
                         'contact'       => $content
-                    ]
+                    ],
+                    'http_errors' => $this->guzzleCatcher // Enable/Disable throwing exceptions on an HTTP protocol errors (i.e., 4xx and 5xx responses).
                 ]
             );
         } catch (\Throwable $e) {
             $this->setLog('critical', $e->getMessage() . " to " . implode(", ", $content));
             throw new Exception($e->getMessage());
         }
-        if ($response->getStatusCode() == 200) {
+
+        if ($response->getStatusCode() === 200) {
             $body     = $response->getBody();
             $arr_body = json_decode($body);
             if ($arr_body->success === true) {
@@ -270,7 +290,26 @@ class MyElefant
                 );
                 return true;
             }
+        } else if ($response->getStatusCode() === 401) {
+            $body     = $response->getBody();
+            $arr_body = json_decode($body);
+            if ($arr_body->errors->Authorization[0] === "Invalid access token" && $this->tokenFlag === 0) {
+                $this->token = $this->setAuthentification($this->secretKey);
+                $this->tokenFlag = 1;
+                $this->guzzleCatcher = true;
+                $this->setLog(
+                    'info',
+                    MyElefantConfig::REGENERATING_TOKEN
+                );
+                $this->sendSms($campaignId, $content);
+            } else {
+                $this->setLog(
+                    'critical',
+                    MyElefantConfig::CRITICAL_MESSAGE_WRONG_TOKEN
+                );
+            }
         }
+
         return false;
     }
 
