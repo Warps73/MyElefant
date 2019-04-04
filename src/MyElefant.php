@@ -305,22 +305,15 @@ class MyElefant
 
         if (is_array($contacts) && $this->checkContactsFormat($contacts)) {
             foreach ($contacts as $key) {
-                if (!$this->checkPhoneNumber($key[0])) {
-                    $this->setLog(
-                        'critical',
-                        MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT
-                    );
-                    throw new Exception($key[0] . ' ' . MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT);
-                }
+                $this->checkPhoneNumber($key[0]);
             }
-        } else {
-            $this->setLog(
-                'critical',
-                MyElefantConfig::CRITICAL_MESSAGE_CONTACT_FORMAT
-            );
-            throw new Exception(MyElefantConfig::CRITICAL_MESSAGE_CONTACT_FORMAT);
+            return $contacts;
         }
-        return $contacts;
+        $this->setLog(
+            'critical',
+            MyElefantConfig::CRITICAL_MESSAGE_CONTACT_FORMAT
+        );
+        throw new Exception(MyElefantConfig::CRITICAL_MESSAGE_CONTACT_FORMAT);
     }
 
     /**
@@ -329,13 +322,18 @@ class MyElefant
      * @param string $phoneNumber Phone number
      *
      * @return bool
+     * @throws @Exception
      */
     private function checkPhoneNumber($phoneNumber)
     {
         if (preg_match(MyElefantConfig::REGEX_PHONE_NUMBER, $phoneNumber)) {
             return true;
         }
-        return false;
+        $this->setLog(
+            'critical',
+            MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT
+        );
+        throw new Exception(MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT);
     }
 
     /**

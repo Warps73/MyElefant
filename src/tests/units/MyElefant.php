@@ -101,7 +101,7 @@ class MyElefant extends atoum\test
                     $this->invoke($myElefantMock)->setContact([['3362739','Timothy']]);
                 }
             )
-            ->hasMessage('3362739 '.MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT)
+            ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT)
 
         ->then
             ->exception(
@@ -144,16 +144,30 @@ class MyElefant extends atoum\test
                     ->isIdenticalTo(true)
 
             ->then
-                ->variable($this->invoke($myElefantMock)->checkPhoneNumber('0612345618'))
-                    ->isIdenticalTo(false)
-
+                ->exception(
+                    function () {
+                        $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                        $this->invoke($myElefantMock)->checkPhoneNumber('33912345618');
+                    }
+                )
+                ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT)
             ->then
-                ->variable($this->invoke($myElefantMock)->checkPhoneNumber('+33612345618'))
-                    ->isIdenticalTo(false)
+                ->exception(
+                    function () {
+                        $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                        $this->invoke($myElefantMock)->checkPhoneNumber('+33612345618');
+                    }
+                )
+                ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT)
             ->then
-                ->variable($this->invoke($myElefantMock)->checkPhoneNumber('Blabla'))
-                    ->isIdenticalTo(false)
-                ;
+                ->exception(
+                    function () {
+                        $myElefantMock = new \mock\MyElefant\MyElefant([]);
+                        $this->invoke($myElefantMock)->checkPhoneNumber('Blabla');
+                    }
+                )
+                ->hasMessage(MyElefantConfig::CRITICAL_MESSAGE_PHONE_NUMBER_FORMAT)
+        ;
     }
 
     public function testSetAuthentification()
