@@ -17,7 +17,7 @@ abstract class MyElefantConfig
     const MAX_LENGTH_MESSAGE = 160;
     const PATH_ERROR_LOG = 'var/log/error.log';
     const PATH_INFO_LOG = 'var/log/info.log';
-    const REGEX_PHONE_NUMBER = '/^[0-9]{2}[0-9]{9}$/';
+    const REGEX_PHONE_NUMBER = '/^[0-9]{2,3}[0-9]{9}$/';
     const SUCCESS_MESSAGE = 'Message sent correctly';
     const URL_MYELEFANT_API = 'https://api.myelefant.com';
     const URL_MYELEFANT_API_AUTHENTIFICATION = '/v1/token';
